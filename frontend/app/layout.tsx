@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import MarketTicker from '../components/MarketTicker'
 
 export const metadata: Metadata = {
   title: 'SIPsmart — AI Powered SIP Planner',
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen">
+        <MarketTicker />
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-6 py-3 flex items-center gap-8">
             <a href="/" className="font-bold text-gray-900 text-lg">
