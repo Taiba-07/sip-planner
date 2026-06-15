@@ -1,6 +1,7 @@
 import httpx
 import time
 from fastapi import APIRouter, HTTPException
+from analytics.metrics import compute_metrics
 
 router = APIRouter()
 
@@ -86,3 +87,32 @@ async def get_fund_history(fund_code: int, days: int = 365):
 
     set_cached(cache_key, result)
     return result
+
+@router.get("/{fund_code}/metrics")
+async def get_fund_metrics(fund_code: int):
+    cache_key = f"metrics_{fund_code}"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    # Fetch full history first
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        try:
+            resp = await client.get(f"https://api.mfapi.in/mf/{fund_code}")
+            resp.raise_for_status()
+            raw = resp.json()
+        except Exception:
+            raise HTTPException(status_code=502, detail="Could not reach MFAPI")
+
+    all_data = raw.get("data", [])
+    nav_list = [
+        {"date": d["date"], "nav": float(d["nav"])}
+        for d in all_data
+        if d.get("nav")
+    ]
+    nav_list.reverse()  # oldest first
+
+    metrics = compute_metrics(nav_list)
+
+    set_cached(cache_key, metrics)
+    return metrics
