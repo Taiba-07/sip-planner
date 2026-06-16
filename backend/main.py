@@ -8,7 +8,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://*.vercel.app"
+        "https://sip-planner-theta.vercel.app",  # your actual Vercel URL
+        "https://sip-planner.vercel.app",         # in case you rename it
     ],
     allow_credentials=True,
     allow_methods=["*"],
