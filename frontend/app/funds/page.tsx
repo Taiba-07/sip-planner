@@ -22,6 +22,8 @@ const categoryColors: Record<string, string> = {
   mid:   'bg-purple-100 text-purple-700',
   small: 'bg-orange-100 text-orange-700',
   flexi: 'bg-green-100 text-green-700',
+  index: 'bg-yellow-100 text-yellow-700',
+  debt:  'bg-gray-100 text-gray-700',
 }
 
 const categoryLabel: Record<string, string> = {
@@ -29,6 +31,8 @@ const categoryLabel: Record<string, string> = {
   mid:   'Mid Cap',
   small: 'Small Cap',
   flexi: 'Flexi Cap',
+  index: 'Index Fund',
+  debt:  'Debt Fund',
 }
 
 export default function FundsPage() {
@@ -38,13 +42,22 @@ export default function FundsPage() {
   const [searching, setSearching] = useState(false)
   const [category, setCategory] = useState('all')
   const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // Load top 8 funds on mount
+  // Load top funds on mount
   useEffect(() => {
+    setLoading(true)
     fetch(`${API}/funds/`)
-      .then(r => r.json())
-      .then(setTopFunds)
+      .then(r => {
+        if (!r.ok) throw new Error()
+        return r.json()
+      })
+      .then(data => {
+        setTopFunds(data)
+        setError(false)
+      })
       .catch(() => setError(true))
+      .finally(() => setLoading(false))
   }, [])
 
   // Search with debounce
@@ -56,12 +69,13 @@ export default function FundsPage() {
     setSearching(true)
     try {
       const params = new URLSearchParams()
-if (q) params.append('q', q)
-if (cat !== 'all') params.append('category', cat)
-params.append('limit', '30')
-const res = await fetch(`${API}/funds/search?${params}`)
+      if (q) params.append('q', q)
+      if (cat !== 'all') params.append('category', cat)
+      params.append('limit', '30')
+      const res = await fetch(`${API}/funds/search?${params}`)
+      if (!res.ok) throw new Error()
       const data = await res.json()
-      setSearchResults(data)
+      setSearchResults(Array.isArray(data) ? data : [])
     } catch {
       setSearchResults([])
     } finally {
@@ -124,7 +138,7 @@ const res = await fetch(`${API}/funds/search?${params}`)
       {isSearching && (
         <div>
           <p className="text-xs text-gray-400 mb-3">
-            {searchResults.length} funds found
+            {searching ? 'Searching...' : `${searchResults.length} funds found`}
           </p>
           <div className="grid grid-cols-1 gap-3">
             {searchResults.map((fund) => (
@@ -160,7 +174,7 @@ const res = await fetch(`${API}/funds/search?${params}`)
         </div>
       )}
 
-      {/* Top 8 curated funds — shown when not searching */}
+      {/* Top funds — shown when not searching */}
       {!isSearching && (
         <div>
           <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-medium">
@@ -170,6 +184,11 @@ const res = await fetch(`${API}/funds/search?${params}`)
             <div className="bg-red-50 border border-red-200 text-red-700
                             px-4 py-3 rounded-xl mb-4 text-sm">
               Could not load funds. Please try again in a moment.
+            </div>
+          )}
+          {loading && (
+            <div className="text-center text-gray-400 py-8 text-sm">
+              Loading funds...
             </div>
           )}
           <div className="grid grid-cols-1 gap-4">
