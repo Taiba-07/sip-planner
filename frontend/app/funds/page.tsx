@@ -55,9 +55,11 @@ export default function FundsPage() {
     }
     setSearching(true)
     try {
-      const res = await fetch(
-        `${API}/funds/search?q=${encodeURIComponent(q)}&category=${cat}&limit=30`
-      )
+      const params = new URLSearchParams()
+if (q) params.append('q', q)
+if (cat !== 'all') params.append('category', cat)
+params.append('limit', '30')
+const res = await fetch(`${API}/funds/search?${params}`)
       const data = await res.json()
       setSearchResults(data)
     } catch {
@@ -167,7 +169,7 @@ export default function FundsPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700
                             px-4 py-3 rounded-xl mb-4 text-sm">
-              Could not load funds. Make sure backend is running at localhost:8000
+              Could not load funds. Please try again in a moment.
             </div>
           )}
           <div className="grid grid-cols-1 gap-4">
