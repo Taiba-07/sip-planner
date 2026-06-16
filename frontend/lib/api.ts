@@ -22,3 +22,23 @@ export async function getMarketIndices() {
   if (!res.ok) throw new Error('Failed to fetch market data')
   return res.json()
 }
+
+export async function searchFunds(query: string, category?: string) {
+  const params = new URLSearchParams()
+  if (query) params.append('q', query)
+  if (category && category !== 'all') params.append('category', category)
+
+  const res = await fetch(`${API}/funds/search?${params}`, {
+    next: { revalidate: 60 }
+  })
+  if (!res.ok) throw new Error('Failed to search funds')
+  return res.json()
+}
+
+export async function getFundMetrics(fundCode: number) {
+  const res = await fetch(`${API}/funds/${fundCode}/metrics`, {
+    next: { revalidate: 300 }
+  })
+  if (!res.ok) throw new Error('Failed to fetch metrics')
+  return res.json()
+}
