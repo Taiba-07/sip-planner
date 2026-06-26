@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import funds, market
+from routers import funds, market, users
 
 app = FastAPI(title="SIPsmart API", version="1.0.0")
 
@@ -8,8 +8,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://sip-planner-theta.vercel.app",  # your actual Vercel URL
-        "https://sip-planner.vercel.app",         # in case you rename it
+        "https://sip-planner-theta.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -18,6 +17,7 @@ app.add_middleware(
 
 app.include_router(funds.router,  prefix="/funds",  tags=["funds"])
 app.include_router(market.router, prefix="/market", tags=["market"])
+app.include_router(users.router,  prefix="/users",  tags=["users"])
 
 @app.get("/")
 def root():
