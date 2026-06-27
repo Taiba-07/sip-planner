@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import funds, market, users
+from routers import funds, market, users, portfolio
 
 app = FastAPI(title="SIPsmart API", version="1.0.0")
 
@@ -18,6 +18,7 @@ app.add_middleware(
 app.include_router(funds.router,  prefix="/funds",  tags=["funds"])
 app.include_router(market.router, prefix="/market", tags=["market"])
 app.include_router(users.router,  prefix="/users",  tags=["users"])
+app.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
 
 @app.get("/")
 def root():

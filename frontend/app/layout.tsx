@@ -33,6 +33,10 @@ export default function RootLayout({
                   className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">
                   Funds
                 </a>
+                <a href="/portfolio"
+                  className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">
+                  Portfolio
+                </a>
               </div>
               <AuthButton />
             </div>

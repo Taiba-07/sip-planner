@@ -7,7 +7,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      checks: ["nonce"],
     }),
   ],
   pages: {
@@ -15,7 +14,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
-      // Save user to our backend DB on every login
       try {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/upsert`, {
           method: "POST",
